@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.vercel
+.taste-skill
+.impeccable
+concepts
+PLAN.md

@@ -1,0 +1,314 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-veneer: #5b2413;
+  --color-veneer-hi: #743019;
+  --color-veneer-hover: #81381e;
+  --color-veneer-deep: #3d160a;
+  --color-inside: #24100a;
+  --color-lace: #f7f1e6;
+  --color-lace-soft: #e6c6b2;
+  --color-brass: #d9b25f;
+  --color-glass: #a9c9bd;
+  --color-cobalt: #2340b3;
+  --color-cobalt-hover: #2b4cc8;
+  /* Numismatic album: navy cardboard pages, recessed cells, captions printed in pale silver. */
+  --color-album: #1c2847;
+  --color-album-hi: #24335a;
+  --color-album-deep: #121a30;
+  --color-album-cover: #0f1628;
+  --color-album-ink: #d9d2bf;
+  --color-album-ink-soft: #a9b0c4;
+
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-sans: 'Golos Text', system-ui, sans-serif;
+
+  --ease-drawer: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --ease-door: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-veneer);
+    color: var(--color-lace);
+    font-size: 18px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    /* Anchored sections land below the sticky header. */
+    scroll-padding-top: 5rem;
+  }
+  ::selection {
+    background: var(--color-brass);
+    color: var(--color-veneer-deep);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 4px;
+  }
+  a {
+    text-underline-offset: 0.22em;
+  }
+}
+
+/* Glass doors of the sideboard: closed by default, `.is-open` on the cabinet slides them apart. */
+@layer components {
+  .door {
+    position: absolute;
+    inset-block: 0;
+    width: 52%;
+    background: rgb(169 201 189 / 0.26);
+    transition: translate 1.4s var(--ease-door);
+  }
+  .door::before {
+    content: '';
+    position: absolute;
+    inset-block: -10%;
+    left: 18%;
+    width: 16%;
+    background: rgb(255 255 255 / 0.16);
+    transform: skewX(-14deg);
+  }
+  .door::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 56px;
+    margin-top: -28px;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 0.5);
+  }
+  .door-left {
+    left: 0;
+  }
+  .door-left::after {
+    right: 18px;
+  }
+  .door-right {
+    right: 0;
+  }
+  .door-right::before {
+    left: 56%;
+  }
+  .door-right::after {
+    left: 18px;
+  }
+  .is-open .door-left {
+    translate: -96% 0;
+  }
+  .is-open .door-right {
+    translate: 96% 0;
+  }
+  .cabinet-photo {
+    scale: 1.06;
+    filter: brightness(0.55) saturate(0.7);
+    transition:
+      scale 1.8s var(--ease-door),
+      filter 1.2s ease 0.2s;
+  }
+  .is-open .cabinet-photo {
+    scale: 1;
+    filter: none;
+  }
+  .cabinet-lamp {
+    opacity: 0;
+    transition: opacity 0.6s ease 0.5s;
+  }
+  .is-open .cabinet-lamp {
+    opacity: 1;
+  }
+
+  /* Shelf objects: set down onto the glass once, lift a little on hover, like picking one up. */
+  .shelf-item {
+    opacity: 0;
+    translate: 0 -14px;
+    transition:
+      opacity 0.5s ease,
+      translate 0.7s var(--ease-out);
+    transition-delay: var(--d, 0ms);
+  }
+  .is-shown .shelf-item {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .shelf-object,
+  .shelf-reflection {
+    transition:
+      translate 0.3s var(--ease-out),
+      opacity 0.3s ease;
+  }
+  .shelf-reflection {
+    opacity: 0.2;
+    scale: 1 -1;
+    mask-image: linear-gradient(to top, rgb(0 0 0 / 0.9), transparent 45%);
+  }
+  .price-tag {
+    transform-origin: 50% 0;
+  }
+  .is-shown .price-tag {
+    animation: tag-swing 1.6s var(--ease-out) both;
+    animation-delay: calc(var(--d, 0ms) + 350ms);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .shelf-item:hover .shelf-object {
+      translate: 0 -8px;
+    }
+    .shelf-item:hover .shelf-reflection {
+      translate: 0 8px;
+      opacity: 0.1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .door,
+    .cabinet-photo,
+    .cabinet-lamp,
+    .shelf-item,
+    .shelf-object,
+    .shelf-reflection {
+      transition: none;
+    }
+    .shelf-item {
+      translate: none;
+    }
+    .is-shown .price-tag {
+      animation: none;
+    }
+  }
+}
+
+/* A paper tag on a thread settles like a pendulum after the object is set down. */
+@keyframes tag-swing {
+  0% {
+    rotate: 10deg;
+  }
+  30% {
+    rotate: -6deg;
+  }
+  55% {
+    rotate: 3deg;
+  }
+  78% {
+    rotate: -1deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
+/* ---------- Albums: coins and banknotes ---------- */
+@layer components {
+  /* A coin under the cursor tilts towards it; JS writes the transform, CSS smooths it. */
+  .coin-tilt {
+    transition:
+      transform 0.45s var(--ease-out),
+      opacity 0.3s ease;
+    will-change: transform;
+  }
+  .coin-tilt.is-tracking {
+    transition: transform 0.08s linear;
+  }
+  /* Light catching the metal. Its position follows the cursor through --x/--y on this element only. */
+  .coin-glint {
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 30%), rgb(255 255 255 / 0.55), transparent 48%);
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .coin-cell:hover .coin-glint {
+    opacity: 1;
+  }
+  /* Taken out of the album: the cell stays, empty. */
+  .coin-cell[aria-pressed='true'] .coin-tilt {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.92);
+  }
+
+  /* The coin or note picked up: turns over on demand. */
+  .flip-card {
+    transform-style: preserve-3d;
+    transition: transform 0.7s var(--ease-door);
+  }
+  .flip-card.is-flipped {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    backface-visibility: hidden;
+  }
+  .flip-face-back {
+    transform: rotateY(180deg);
+  }
+  .picked-up {
+    animation: pick-up 0.5s var(--ease-out) both;
+  }
+
+  /* A page of the album turning over the spine. */
+  .album-leaf {
+    transform-style: preserve-3d;
+  }
+  .album-leaf > * {
+    backface-visibility: hidden;
+  }
+  .album-leaf > :last-child {
+    transform: rotateY(180deg);
+  }
+
+  /* A banknote in a clear pocket slides up and out of it under the cursor. */
+  .note-in-pocket {
+    transition: translate 0.35s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .pocket:hover .note-in-pocket {
+      translate: 0 -22%;
+    }
+  }
+  .pocket[aria-pressed='true'] .note-in-pocket {
+    translate: 0 -120%;
+    opacity: 0;
+    transition:
+      translate 0.4s var(--ease-out),
+      opacity 0.25s ease 0.1s;
+  }
+
+  /* Details panel: a column beside the album on wide screens, a sheet from the bottom on narrow ones. */
+  @media (max-width: 63.999rem) {
+    .album-panel {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 50;
+      max-height: 80svh;
+      overflow-y: auto;
+      border-radius: 10px 10px 0 0;
+      translate: 0 100%;
+      visibility: hidden;
+      transition:
+        translate 0.35s var(--ease-drawer),
+        visibility 0s linear 0.35s;
+    }
+    .album-panel.is-open {
+      translate: 0 0;
+      visibility: visible;
+      transition: translate 0.35s var(--ease-drawer);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .coin-tilt,
+    .flip-card,
+    .note-in-pocket,
+    .album-panel {
+      transition: none;
+    }
+    .picked-up {
+      animation: none;
+    }
+  }
+}
+
+@keyframes pick-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.9) rotateY(-30deg);
+  }
+}
