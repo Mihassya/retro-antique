@@ -1,5 +1,5 @@
-import { useLayoutEffect, useRef, useState } from 'react'
-import { formatPrice, getCoinPages } from '../../data'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { formatPrice, getCoinPages, largeImage } from '../../data'
 import { rubleSpec, type Coin } from '../../data/coins'
 import { Reveal } from '../../components/Reveal'
 import { AlbumPanel, type PanelItem } from './AlbumPanel'
@@ -23,9 +23,7 @@ const halves = (coins: Coin[]) => {
 }
 
 function toPanel(coin: Coin): PanelItem {
-  const face = (src: string, side: string) => (
-    <img src={src} alt={`${coin.denomination} ${coin.year}, ${side}`} width={480} height={480} className="size-full rounded-full" />
-  )
+  const face = (src: string, side: string) => ({ src, large: largeImage(src), alt: `${coin.denomination} ${coin.year}, ${side}` })
   return {
     key: coin.id,
     title: `${coin.denomination} ${coin.year}`,
@@ -38,8 +36,7 @@ function toPanel(coin: Coin): PanelItem {
     ],
     price: coin.price,
     message: `Здравствуйте! Интересует монета ${coin.denomination} ${coin.year} «${coin.title}» с сайта. Есть в наличии?`,
-    front: face(coin.reverse, 'реверс'),
-    back: face(coin.obverse, 'аверс'),
+    faces: [face(coin.reverse, 'реверс'), face(coin.obverse, 'аверс')],
     shape: 'coin',
   }
 }
@@ -98,9 +95,18 @@ export function CoinAlbum() {
   const basePage = (side: 0 | 1) => (flip ? ((side === 0) === forward ? flip.from : flip.to) : current)
 
   const cellProps = { selected, onSelect: (coin: Coin) => setSelected((s) => (s?.id === coin.id ? null : coin)) }
+  const allCoins = pages.flatMap((page) => page.coins)
+
+  // Stepping through the viewer can land on a coin from the other section: open the album there,
+  // so the empty cell is in sight when the viewer closes.
+  useEffect(() => {
+    if (!selected || flip) return
+    const page = pages.findIndex((p) => p.coins.some((c) => c.id === selected.id))
+    if (page !== current) setCurrent(page)
+  }, [selected]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] lg:items-start">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start">
       <Reveal delay={200}>
         <div role="group" aria-label="Разделы альбома" className="flex justify-end gap-2 pr-6 md:pr-10">
           {pages.map((page, i) => (
@@ -158,12 +164,14 @@ export function CoinAlbum() {
 
       <AlbumPanel
         item={selected && toPanel(selected)}
+        items={allCoins.map(toPanel)}
+        onSelect={(key) => setSelected(allCoins.find((c) => c.id === key) ?? null)}
         onClose={() => setSelected(null)}
         empty={
           <>
             <p className="font-display text-[clamp(22px,1.8vw,28px)] leading-[1.1] font-medium tracking-[-0.02em] text-lace">Альбом открыт</p>
             <img src={pages[0].coins[0].obverse} alt="" width={480} height={480} className="mt-8 mb-2 w-44 -rotate-12 rounded-full" />
-            <p className="mt-3 text-album-ink-soft">Наведите на монету, чтобы рассмотреть её на свету. Нажмите — достанем из ячейки и перевернём.</p>
+            <p className="mt-3 text-album-ink-soft">Наведите на монету, чтобы рассмотреть её на свету. Нажмите — достанем из ячейки, а там можно перевернуть и рассмотреть в полный размер.</p>
             <dl className="mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-base">
               <dt className="text-album-ink-soft">В альбоме</dt>
               <dd>{pages.reduce((n, p) => n + p.coins.length, 0)} монет</dd>

@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { formatPrice, getNotePages } from '../../data'
+import { formatPrice, getNotePages, largeImage } from '../../data'
 import type { Note } from '../../data/notes'
 import { Reveal } from '../../components/Reveal'
 import { AlbumPanel, type PanelItem } from './AlbumPanel'
 
 function toPanel(note: Note): PanelItem {
-  const face = (src: string, side: string) => <img src={src} alt={`${note.value} 1961 года, ${side}`} width={960} height={480} className="size-full object-contain" />
+  const face = (src: string, side: string) => ({ src, large: largeImage(src), alt: `${note.value} 1961 года, ${side}` })
   return {
     key: note.id,
     title: `${note.value}, 1961`,
@@ -16,8 +16,7 @@ function toPanel(note: Note): PanelItem {
     ],
     price: note.price,
     message: `Здравствуйте! Интересует банкнота ${note.value} 1961 года с сайта. Есть в наличии?`,
-    front: face(note.front, 'лицевая сторона'),
-    back: note.back && face(note.back, 'оборот'),
+    faces: [face(note.front, 'лицевая сторона'), ...(note.back ? [face(note.back, 'оборот')] : [])],
     shape: 'note',
   }
 }
@@ -29,9 +28,10 @@ function toPanel(note: Note): PanelItem {
 export function NoteAlbum() {
   const pages = getNotePages()
   const [selected, setSelected] = useState<Note | null>(null)
+  const allNotes = pages.flatMap((page) => page.notes)
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-start">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
       <Reveal delay={200} className="rounded-[6px] bg-album-cover p-2.5 md:p-4">
         <div className="grid gap-2.5 md:grid-cols-2 md:gap-0">
           {pages.map((page, i) => (
@@ -61,12 +61,14 @@ export function NoteAlbum() {
 
       <AlbumPanel
         item={selected && toPanel(selected)}
+        items={allNotes.map(toPanel)}
+        onSelect={(key) => setSelected(allNotes.find((n) => n.id === key) ?? null)}
         onClose={() => setSelected(null)}
         empty={
           <>
             <p className="font-display text-[clamp(22px,1.8vw,28px)] leading-[1.1] font-medium tracking-[-0.02em] text-lace">Образец 1961 года</p>
             <p className="mt-3 text-album-ink-soft">
-              Деньги после реформы 1961 года ходили до 1991-го. Наведите на банкноту — она выглянет из кармашка, нажмите — достанем целиком.
+              Деньги после реформы 1961 года ходили до 1991-го. Наведите на банкноту — она выглянет из кармашка, нажмите — достанем целиком и покажем в полный размер.
             </p>
           </>
         }

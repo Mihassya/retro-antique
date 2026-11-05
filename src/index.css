@@ -293,7 +293,19 @@
     }
   }
 
+  /* Full-screen viewer: fades and settles in; the page behind dims. */
+  .viewer[open] {
+    animation: viewer-in 0.28s var(--ease-out);
+  }
+  .viewer[open]::backdrop {
+    animation: viewer-dim 0.28s ease;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .viewer[open],
+    .viewer[open]::backdrop {
+      animation: none;
+    }
     .coin-tilt,
     .flip-card,
     .note-in-pocket,
@@ -310,5 +322,18 @@
   from {
     opacity: 0;
     transform: translateY(24px) scale(0.9) rotateY(-30deg);
+  }
+}
+
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes viewer-dim {
+  from {
+    opacity: 0;
   }
 }

@@ -11,7 +11,10 @@ export const getItems = () => items
 export const getCoinPages = () => coinPages
 export const getNotePages = () => notePages
 
-export const countCoins = () => coinPages.reduce((n, page) => n + page.coins.length, 0)
+/** Every coin and note image has a full-size twin in a `large/` folder next to it, for the viewer. */
+export const largeImage = (src: string) => src.replace(/\/images\/(coins|notes)\//, '/images/$1/large/')
+
+export const countCoins = () =>coinPages.reduce((n, page) => n + page.coins.length, 0)
 export const countNotes = () => notePages.reduce((n, page) => n + page.notes.length, 0)
 
 export type Shelf = { category: Category; title: string; note: string; link: string; items: Item[] }
