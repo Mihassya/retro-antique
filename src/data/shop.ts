@@ -3,7 +3,13 @@ export const shop = {
   whatsapp: null as string | null,
   city: 'Усть-Каменогорск',
   address: 'ул. Казахстан, 77',
-  hours: '10:00–18:00',
+  landmark: 'рядом с Домом связи',
+  hours: [
+    ['пн–пт', '10:00–18:00'],
+    ['сб', '10:00–14:00'],
+    ['вс', 'выходной'],
+  ] as [days: string, time: string][],
+  map: 'https://2gis.kz/ust-kamenogorsk/firm/12807639721317474',
 }
 
 /** A wa.me link with the message already typed. Without a number WhatsApp asks whom to send it to. */

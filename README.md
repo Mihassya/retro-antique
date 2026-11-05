@@ -52,6 +52,6 @@ src/
 
 Пока нет собственных фото лавки, используются открытые коллекции: Art Institute of Chicago и
 Metropolitan Museum (CC0), Wikimedia Commons (серия RR3009 — монеты, общественное достояние;
-«Soviet porcelain 03» — shakko, CC BY-SA 3.0; «Figurine-girl after bathing» — Andshel, CC BY-SA 3.0),
+витрина на первом экране — «Porcelain (Tropinin museum) 01, 04» — shakko, CC BY-SA 3.0; «Figurine-girl after bathing» — Andshel, CC BY-SA 3.0),
 образцы банкнот из собрания Музея нации (moneymuseum.by, общественное достояние). Фон с предметов
 убран автоматически. Описания и цены — образец.

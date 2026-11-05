@@ -1,8 +1,28 @@
+import type { ReactNode } from 'react'
+import { shop } from '../data'
 import { Reveal } from './Reveal'
 
-const facts = [
-	['Адрес', 'ул. Казахстан, 77, рядом с Домом связи'],
-	['Часы', 'каждый день 10:00–18:00'],
+const facts: [string, ReactNode][] = [
+	['Город', shop.city],
+	[
+		'Адрес',
+		<>
+			{shop.address}, {shop.landmark}
+			<a href={shop.map} target='_blank' rel='noreferrer' className='mt-1 block text-brass underline underline-offset-[0.22em]'>
+				Открыть в 2ГИС
+			</a>
+		</>,
+	],
+	[
+		'Часы',
+		<>
+			{shop.hours.map(([days, time]) => (
+				<span key={days} className='block'>
+					{days} {time}
+				</span>
+			))}
+		</>,
+	],
 	['Оплата', 'наличные, перевод, QR'],
 	['Скупка', 'приносите вещь — оценим при вас'],
 ]
@@ -19,7 +39,7 @@ export function Visit() {
 					as='h2'
 					className='font-display text-[clamp(40px,5vw,84px)] leading-[.95] font-bold tracking-[-0.035em] md:col-span-7'
 				>
-					<span id='visit-title'>Открыто с 10 до 18</span>
+					<span id='visit-title'>С 10 до 18, в&nbsp;субботу до&nbsp;14</span>
 				</Reveal>
 				<Reveal
 					as='dl'

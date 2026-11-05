@@ -93,7 +93,7 @@ export function Sideboard() {
 						))}
 					</nav>
 					<p className='max-w-[34ch] text-[clamp(17px,1.35vw,21px)] text-lace-soft md:text-right'>
-						Антикварная лавка на Казахстан, 77.
+						Антикварная лавка в Усть-Каменогорске, ул. Казахстан, 77.
 					</p>
 				</div>
 			</div>
@@ -102,14 +102,18 @@ export function Sideboard() {
 				className={`relative overflow-hidden rounded border-12 border-veneer-hi bg-veneer-deep md:border-18 ${open ? 'is-open' : ''}`}
 			>
 				<div className='absolute inset-0 bg-inside'>
-					<img
-						ref={photo}
-						src='/images/shelf-porcelain.jpg'
-						width={1200}
-						height={870}
-						alt='Две полки советских фарфоровых статуэток: девушка с веером, казак, танцовщица, белый медведь'
-						className='cabinet-photo size-full object-cover object-[50%_40%]'
-					/>
+					{/* A wide shot fills the wide cabinet; a phone gets a closer one with the figures in the middle. */}
+					<picture>
+						<source media='(max-width: 47.999rem)' srcSet='/images/vitrine-tall.webp' width={1280} height={660} />
+						<img
+							ref={photo}
+							src='/images/vitrine-wide.webp'
+							width={1920}
+							height={814}
+							alt='Фарфоровые статуэтки на стеклянной полке витрины: пары в народных костюмах, девушка с ягнёнком, музыкант'
+							className='cabinet-photo size-full object-cover object-[50%_80%]'
+						/>
+					</picture>
 				</div>
 				<div className='door door-left' aria-hidden='true' />
 				<div className='door door-right' aria-hidden='true' />
@@ -133,8 +137,9 @@ export function Sideboard() {
 					label={
 						<span>
 							Каталог{' '}
-							<span className='font-normal max-md:block'>
-								· {plural(stock, ['вещь', 'вещи', 'вещей'])}
+							<span className='font-normal whitespace-nowrap max-md:block'>
+								<span className='max-md:hidden'>· </span>
+								{plural(stock, ['вещь', 'вещи', 'вещей'])}
 							</span>
 						</span>
 					}
