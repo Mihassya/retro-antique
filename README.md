@@ -52,6 +52,6 @@ src/
 
 Пока нет собственных фото лавки, используются открытые коллекции: Art Institute of Chicago и
 Metropolitan Museum (CC0), Wikimedia Commons (серия RR3009 — монеты, общественное достояние;
-витрина на первом экране — «Porcelain (Tropinin museum) 01, 04» — shakko, CC BY-SA 3.0; «Figurine-girl after bathing» — Andshel, CC BY-SA 3.0),
+витрина на первом экране — Пауль Вольф, «Фарфоровый кабинет. Дрезденский дворец», Deutsche Fotothek, CC0; «Figurine-girl after bathing» — Andshel, CC BY-SA 3.0),
 образцы банкнот из собрания Музея нации (moneymuseum.by, общественное достояние). Фон с предметов
 убран автоматически. Описания и цены — образец.
