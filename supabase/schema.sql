@@ -37,6 +37,10 @@ create table if not exists public.items (
 
 alter table public.items enable row level security;
 
+-- Table access for the API roles (newer projects may not grant it automatically); RLS below still decides rows.
+grant select on public.items to anon, authenticated;
+grant insert, update, delete on public.items to authenticated;
+
 drop policy if exists "Anyone can read items" on public.items;
 create policy "Anyone can read items" on public.items for select using (true);
 

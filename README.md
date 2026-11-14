@@ -75,12 +75,12 @@ api/keepalive.ts ежедневный запрос к базе по Vercel Cron,
    Authentication → Users → **Add user**: почта и пароль владельца.
 4. SQL Editor: `insert into public.admins (email) values ('почта-владельца');` — без этого вход
    пройдёт, но сохранять база не даст.
-5. Settings → API: скопировать Project URL и anon key в `.env.local` (образец — `.env.example`)
-   и в Vercel → Settings → Environment Variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`),
+5. Settings → API Keys: скопировать Project URL и publishable key в `.env.local` (образец — `.env.example`)
+   и в Vercel → Settings → Environment Variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`),
    затем передеплоить.
 
 Права проверяет сама база (RLS): читать товары может любой, менять — только вошедший пользователь
-из таблицы `admins`. Ключ anon публичный по замыслу и попадает в сборку — это нормально.
+из таблицы `admins`. Publishable-ключ публичный по замыслу и попадает в сборку — это нормально.
 
 ## Изображения
 
