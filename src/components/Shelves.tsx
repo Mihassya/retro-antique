@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router'
-import { countCoins, countNotes, formatPrice, getCoinPages, getNotePages, getShelves, type Item, type Shelf } from '../data'
+import { countCoins, countNotes, formatPrice, getCoinPages, getNotePages, getShelves, useItems, type Item, type Shelf } from '../data'
 import { useInView } from '../hooks/useInView'
 import { Reveal } from './Reveal'
 
@@ -12,6 +12,7 @@ const MAX_PX = 330
 const shelfHeight = (item: Item) => Math.min(MAX_PX, Math.max(MIN_PX, item.heightCm * PX_PER_CM))
 
 export function Shelves() {
+  const { items } = useItems()
   return (
     <section id="shelves" aria-labelledby="shelves-title" className="bg-inside px-4 pt-24 pb-28 md:px-9 md:pt-38 md:pb-36">
       <Reveal as="h2" className="max-w-[14ch] font-display text-[clamp(40px,5vw,84px)] leading-[.95] font-bold tracking-[-0.035em]">
@@ -22,7 +23,7 @@ export function Shelves() {
       </Reveal>
 
       <div className="mt-20 flex flex-col gap-24 md:mt-28 md:gap-32">
-        {getShelves().map((shelf) => (
+        {getShelves(items ?? []).map((shelf) => (
           <ShelfRow key={shelf.category} shelf={shelf} />
         ))}
       </div>
@@ -98,7 +99,7 @@ function ShelfRow({ shelf }: { shelf: Shelf }) {
               <p className="relative w-full rounded-[3px] bg-lace px-3 pt-4 pb-3 text-center text-[15px] leading-snug text-veneer-deep">
                 <span aria-hidden="true" className="absolute top-1.5 left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-inside" />
                 <b className="line-clamp-2 text-base font-medium">{item.name}</b>
-                <span className="line-clamp-1">{item.origin}</span>
+                {item.origin && <span className="line-clamp-1">{item.origin}</span>}
                 <span className="mt-1.5 block font-display text-[17px] font-bold tracking-[-0.01em]">{formatPrice(item.price)}</span>
               </p>
             </div>

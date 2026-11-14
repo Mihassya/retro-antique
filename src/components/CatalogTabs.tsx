@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router'
-import { countCoins, countNotes, getItems } from '../data'
+import { countCoins, countNotes, useItems } from '../data'
 
 /** Things, coins and banknotes are three ways to look at the stock; each tab is its own page. */
 export function CatalogTabs() {
+  const { items } = useItems()
   const tabs = [
-    { to: '/catalog', label: 'Вещи', count: getItems().filter((i) => !i.sold).length },
+    { to: '/catalog', label: 'Вещи', count: items?.filter((i) => !i.sold).length },
     { to: '/catalog/coins', label: 'Монеты', count: countCoins() },
     { to: '/catalog/banknotes', label: 'Банкноты', count: countNotes() },
   ]

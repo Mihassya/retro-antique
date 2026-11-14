@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router'
 import { PageHead } from '../components/PageHead'
 import { Reveal } from '../components/Reveal'
 import { Chip } from '../components/Chip'
-import { categories, formatPrice, getItems, whatsappLink, type Category, type Item } from '../data'
+import { categories, formatPrice, itemTitle, useItems, whatsappLink, type Category, type Item } from '../data'
 import { budgets, filterItems, readFilters, sorts, writeFilters, type Filters } from '../features/catalog/filter'
 import { plural } from '../lib/plural'
 
@@ -12,7 +12,8 @@ const isCategory = (v: string | null): v is Category => categoryIds.includes(v a
 export function Catalog() {
   const [params, setParams] = useSearchParams()
   const filters = readFilters(params, isCategory)
-  const all = getItems()
+  const { items, failed } = useItems()
+  const all = items ?? []
   const found = filterItems(all, filters)
 
   const set = (patch: Partial<Filters>) => setParams(writeFilters({ ...filters, ...patch }), { replace: true, preventScrollReset: true })
@@ -79,7 +80,13 @@ export function Catalog() {
 
       <div className="mt-14 flex flex-wrap items-baseline justify-between gap-4 md:mt-16">
         <p aria-live="polite" className="font-display text-[clamp(22px,2vw,30px)] font-medium tracking-[-0.02em]">
-          {found.length ? `Нашлось ${plural(found.length, ['вещь', 'вещи', 'вещей'])}` : 'Под такие условия ничего нет'}
+          {items === null
+            ? 'Загружаем каталог…'
+            : failed
+              ? 'Каталог не загрузился. Обновите страницу'
+              : found.length
+                ? `Нашлось ${plural(found.length, ['вещь', 'вещи', 'вещей'])}`
+                : 'Под такие условия ничего нет'}
         </p>
         {filtered && (
           <button type="button" onClick={() => setParams({}, { replace: true })} className="min-h-11 text-brass underline-offset-[0.22em] hover:underline">
@@ -88,7 +95,7 @@ export function Catalog() {
         )}
       </div>
 
-      {found.length ? (
+      {items === null ? null : found.length ? (
         <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6 md:gap-y-16 xl:grid-cols-4">
           {found.map((item, i) => (
             <CatalogCard key={item.id} item={item} delay={(i % 4) * 70} />
@@ -129,16 +136,15 @@ function CatalogCard({ item, delay }: { item: Item; delay: number }) {
         />
       </div>
       <h3 className="mt-4 text-lg leading-snug font-medium">{item.name}</h3>
-      <p className="text-base text-lace-soft">
-        {item.origin}
-      </p>
+      {item.origin && <p className="text-base text-lace-soft">{item.origin}</p>}
+      {item.description && <p className="mt-1.5 line-clamp-3 text-[15px] leading-snug text-lace-soft">{item.description}</p>}
       {item.sold ? (
         <p className="mt-2 font-display text-[19px] font-bold text-lace-soft">Продано</p>
       ) : (
         <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <p className="font-display text-[19px] font-bold tracking-[-0.01em] text-brass">{formatPrice(item.price)}</p>
           <a
-            href={whatsappLink(`Здравствуйте! Интересует «${item.name}» (${item.origin}) с сайта. Есть в наличии?`)}
+            href={whatsappLink(`Здравствуйте! Интересует ${itemTitle(item)} с сайта. Есть в наличии?`)}
             target="_blank"
             rel="noreferrer"
             className="inline-flex min-h-11 items-center text-base underline underline-offset-[0.22em] hover:text-brass"

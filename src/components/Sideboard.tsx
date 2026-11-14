@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { getCoinPages, getItems, whatsappLink } from '../data'
+import { getCoinPages, useItems, whatsappLink } from '../data'
 import { plural } from '../lib/plural'
 
 const nav = [
@@ -90,7 +90,8 @@ const foldedMap = (
 export function Sideboard() {
 	const photo = useRef<HTMLImageElement>(null)
 	const [open, setOpen] = useState(false)
-	const stock = getItems().filter(item => !item.sold).length
+	const { items } = useItems()
+	const stock = items?.filter(item => !item.sold).length
 	const coins = getCoinPages()[0].coins.slice(0, 5)
 
 	useEffect(() => {
@@ -176,7 +177,7 @@ export function Sideboard() {
 						card='brass'
 						label={
 							<>
-								Каталог <span className='font-normal'>· {plural(stock, ['вещь', 'вещи', 'вещей'])}</span>
+								Каталог{stock !== undefined && <span className='font-normal'> · {plural(stock, ['вещь', 'вещи', 'вещей'])}</span>}
 							</>
 						}
 						contents={indexCards}

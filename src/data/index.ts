@@ -1,13 +1,12 @@
 import { coinPages } from './coins'
-import { categories, items, type Category, type Item } from './items'
+import { categories, type Category, type Item } from './items'
 import { notePages } from './notes'
 
 /*
- * The one place components read content from. Today it is typed files in this folder; later a build
- * step (CMS, Telegram bot) can write those files or replace these functions without touching the UI.
+ * The one place components read content from. Things for sale come from the backend (Supabase, or the
+ * in-browser demo) through `useItems`; coins, banknotes and contacts are still typed files here.
  */
 
-export const getItems = () => items
 export const getCoinPages = () => coinPages
 export const getNotePages = () => notePages
 
@@ -19,18 +18,25 @@ export const countNotes = () => notePages.reduce((n, page) => n + page.notes.len
 
 export type Shelf = { category: Category; title: string; note: string; link: string; items: Item[] }
 
-/** Sideboard shelves for the home page: one per category that has featured things, three things each. */
-export function getShelves(): Shelf[] {
+/** Sideboard shelves for the home page: one per category that has something on its shelf, slots 1–3 in order. */
+export function getShelves(items: Item[]): Shelf[] {
   return (Object.keys(categories) as Category[])
     .map((category) => ({
       category,
       title: categories[category].label,
       note: categories[category].note,
       link: categories[category].shelf,
-      items: items.filter((item) => item.category === category && item.featured && !item.sold).slice(0, 3),
+      items: items
+        .filter((item) => item.category === category && item.shelf && !item.sold)
+        .sort((a, b) => (a.shelf ?? 0) - (b.shelf ?? 0))
+        .slice(0, 3),
     }))
     .filter((shelf) => shelf.items.length > 0)
 }
 
+/** «Девочка после купания (ЛФЗ, 1960-е)» — the name with its origin when there is one, for messages. */
+export const itemTitle = (item: Item) => (item.origin ? `«${item.name}» (${item.origin})` : `«${item.name}»`)
+
 export { categories, type Category, type Item }
+export { refreshItems, useItems } from './store'
 export { formatPrice, shop, whatsappLink } from './shop'

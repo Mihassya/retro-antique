@@ -4,8 +4,10 @@ export type Item = {
   id: string
   name: string
   category: Category
-  /** Maker, place or period, as it goes on the tag. */
+  /** Maker, place or period, as it goes on the tag. May be empty. */
   origin: string
+  /** Free text from the owner: condition, story. May be empty. */
+  description?: string
   /** Tenge; null means «по запросу». */
   price: number | null
   /** Real height of the object. The shelf turns it into pixels, so things keep their proportions. */
@@ -15,8 +17,8 @@ export type Item = {
   /** Intrinsic size of `image`, for layout before it loads. */
   size: [width: number, height: number]
   alt: string
-  /** Stands in the sideboard on the home page. Three per category at most. */
-  featured?: boolean
+  /** Place on its category's shelf in the sideboard, 1–3, left to right. Absent: catalogue only. */
+  shelf?: number | null
   sold?: boolean
   /** ISO date the item came into the shop, for «сначала новые». */
   addedAt: string
@@ -50,8 +52,9 @@ export const categories: Record<Category, { label: string; shelf: string; note: 
   },
 }
 
-// Sample content: names, dates and prices must be confirmed by the shop.
-export const items: Item[] = [
+// Sample content: names, dates and prices must be confirmed by the shop. Shown when no database is
+// connected (demo mode), and loaded into Supabase by supabase/seed.sql.
+export const sampleItems: Item[] = [
   {
     id: 'girl-after-bathing',
     name: 'Девочка после купания',
@@ -62,7 +65,7 @@ export const items: Item[] = [
     image: '/images/cutouts/figurine.webp',
     size: [395, 900],
     alt: 'Статуэтка девочки в голубом купальнике',
-    featured: true,
+    shelf: 1,
     addedAt: '2026-10-28',
   },
   {
@@ -75,7 +78,7 @@ export const items: Item[] = [
     image: '/images/cutouts/girl-porcelain.webp',
     size: [337, 884],
     alt: 'Фарфоровая статуэтка девушки в розовом платье с корзиной цветов',
-    featured: true,
+    shelf: 2,
     addedAt: '2026-10-12',
   },
   {
@@ -88,7 +91,7 @@ export const items: Item[] = [
     image: '/images/cutouts/man-grapes.webp',
     size: [356, 878],
     alt: 'Фарфоровая статуэтка мужчины в розовом камзоле с корзиной винограда',
-    featured: true,
+    shelf: 3,
     addedAt: '2026-10-12',
   },
   {
@@ -101,7 +104,7 @@ export const items: Item[] = [
     image: '/images/cutouts/teapot-bianhu.webp',
     size: [782, 817],
     alt: 'Белый плоский чайник с деревянной крышкой',
-    featured: true,
+    shelf: 1,
     addedAt: '2026-09-30',
   },
   {
@@ -114,7 +117,7 @@ export const items: Item[] = [
     image: '/images/cutouts/vase-hex.webp',
     size: [680, 617],
     alt: 'Шестигранная ваза бледно-зелёной глазури',
-    featured: true,
+    shelf: 2,
     addedAt: '2026-10-20',
   },
   {
@@ -127,7 +130,7 @@ export const items: Item[] = [
     image: '/images/cutouts/jar-peonies.webp',
     size: [521, 900],
     alt: 'Зелёная ваза с рельефным узором пионов',
-    featured: true,
+    shelf: 3,
     addedAt: '2026-08-14',
   },
   {
@@ -164,7 +167,7 @@ export const items: Item[] = [
     image: '/images/cutouts/lion.webp',
     size: [900, 671],
     alt: 'Тёмная бронзовая фигура льва на скале',
-    featured: true,
+    shelf: 1,
     addedAt: '2026-10-30',
   },
   {
@@ -177,7 +180,7 @@ export const items: Item[] = [
     image: '/images/cutouts/wall-clock.webp',
     size: [429, 900],
     alt: 'Позолоченные настенные часы с фигурой наверху',
-    featured: true,
+    shelf: 2,
     addedAt: '2026-09-05',
   },
   {
@@ -190,7 +193,7 @@ export const items: Item[] = [
     image: '/images/cutouts/candelabrum.webp',
     size: [634, 518],
     alt: 'Канделябр на четыре свечи с золочёными завитками',
-    featured: true,
+    shelf: 3,
     addedAt: '2026-10-02',
   },
   {
