@@ -62,32 +62,4 @@ api/keepalive.ts ежедневный запрос к базе по Vercel Cron,
 Монеты, банкноты и контакты лежат в `src/data/`. Товары сайт загружает из Supabase при открытии
 страницы, поэтому изменения из админки видны сразу, без пересборки.
 
-## Админка и база
 
-Адрес проекта Supabase и publishable-ключ лежат в `src/lib/backend/index.ts` — оба публичные по замыслу,
-поэтому деплой не зависит от переменных окружения. `VITE_SUPABASE_URL` и `VITE_SUPABASE_PUBLISHABLE_KEY`
-их переопределяют, а `VITE_SUPABASE_URL=demo` включает **демо-режим**: данные — образцы из
-`src/data/items.ts`, правки хранятся только в этом браузере, войти можно с любым паролем.
-
-Подключение (один раз):
-
-1. Создать проект на [supabase.com](https://supabase.com) (бесплатный тариф: 500 МБ базы, 1 ГБ фото).
-2. SQL Editor → выполнить `supabase/schema.sql`, затем, если нужны образцы, `supabase/seed.sql`.
-3. Authentication → Sign In / Providers → выключить **Allow new users to sign up**.
-   Authentication → Users → **Add user**: почта и пароль владельца.
-4. SQL Editor: `insert into public.admins (email) values ('почта-владельца');` — без этого вход
-   пройдёт, но сохранять база не даст.
-5. Settings → API Keys: скопировать Project URL и publishable key в `.env.local` (образец — `.env.example`)
-   и в Vercel → Settings → Environment Variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`),
-   затем передеплоить.
-
-Права проверяет сама база (RLS): читать товары может любой, менять — только вошедший пользователь
-из таблицы `admins`. Publishable-ключ публичный по замыслу и попадает в сборку — это нормально.
-
-## Изображения
-
-Пока нет собственных фото лавки, используются открытые коллекции: Art Institute of Chicago и
-Metropolitan Museum (CC0), Wikimedia Commons (серия RR3009 — монеты, общественное достояние;
-витрина на первом экране — Пауль Вольф, «Фарфоровый кабинет. Дрезденский дворец», Deutsche Fotothek, CC0; «Figurine-girl after bathing» — Andshel, CC BY-SA 3.0),
-образцы банкнот из собрания Музея нации (moneymuseum.by, общественное достояние). Фон с предметов
-убран автоматически. Описания и цены — образец.
